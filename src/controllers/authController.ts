@@ -2,17 +2,21 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserModel } from '../models/userModel';
-import dotenv from 'dotenv';
 
-dotenv.config();
-
-export const register = async (req: Request, res: Response): Promise<void> => {
+export const register = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
     const { username, email, password } = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        await UserModel.create(username, email, hashedPassword);
+        await UserModel.create(
+            username,
+            email,
+            hashedPassword
+        );
 
         res.status(201).json({
             success: true,
@@ -34,13 +38,19 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
     const { username, password } = req.body;
 
     try {
         const user = await UserModel.findByUsername(username);
 
-        if (!user || !(await bcrypt.compare(password, user.password))) {
+        if (
+            !user ||
+            !(await bcrypt.compare(password, user.password))
+        ) {
             res.status(401).json({
                 success: false,
                 message: 'Username atau password salah!'
